@@ -1,15 +1,14 @@
 from pydantic_settings import BaseSettings
-import streamlit as st
+
 
 class Settings(BaseSettings):
     # debug: bool
     # username: str
     # password: str
-    login_url: str = st.secrets['.env']['LOGIN_URL']
+    login_url: str
 
-    # class Config:
-    #     # env_file = ".env"
-    #     env_file = ".env"
+    class Config:
+        env_file = ".env"
 
 
 setting = Settings()  # pyright: ignore
