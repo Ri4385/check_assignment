@@ -10,8 +10,8 @@ def get_assignmtnts(session: requests.Session) -> Assignments:
     json_data = session.get(url).json()
 
     
-    with open("data/assignments.json", "w", encoding="utf-8") as file:
-        json.dump(json_data,file,indent=2,ensure_ascii=False)
+    # with open("data/assignments.json", "w", encoding="utf-8") as file:
+    #     json.dump(json_data,file,indent=2,ensure_ascii=False)
 
     data: Assignments = Assignments(**json_data)
     return data
