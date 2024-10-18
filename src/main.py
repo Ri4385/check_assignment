@@ -28,7 +28,7 @@ else:
 
 # 課題を取得するボタン
 if st.session_state.logged_in and st.button("Get Assignments"):
-    data: Assignments = client.get_assignmtnts(session=st.session_state.session)
+    data: Assignments = client.get_assignmtnts(session=session)
     
     # 課題のリストを表示
     if data.assignment_collection:
