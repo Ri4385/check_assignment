@@ -136,7 +136,7 @@ def main() -> None:
         else:
             st.info("No assignments found.")
 
-        st.write(f"api time: {int(time.perf_counter() - start_time)}s")
+        st.write(f"api time: {(time.perf_counter() - start_time):.02f}s")
 
 def fast_main():
     session = login.login_with_password(username="a0233232", password="Nagauchi0408")
