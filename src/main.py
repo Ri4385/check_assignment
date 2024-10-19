@@ -5,7 +5,7 @@ from datetime import datetime
 
 from api import login
 from api import client
-from api.model import Assignments
+# from api.model import Assignments
 from api.model import Assignment
 from api.model import Course
 
