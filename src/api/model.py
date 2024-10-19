@@ -3,6 +3,7 @@ from pydantic import BaseModel
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
+import json
 
 
 
@@ -155,34 +156,39 @@ class Assignment(BaseModel):
         formatted_date = japan_time.strftime(f"%Y/%m/%d %H:%M ({weekday_short})")
 
         return formatted_date
+    
+    def is_submitted(self) -> bool:
+        if not self.submissions:
+            return False
+        if self.submissions[0].status[:4] == "提出済み":
+            return True
+        else:
+            return False
+        
+    def get_assignment_url(self) -> str:
+        url = f"https://panda.ecs.kyoto-u.ac.jp/portal/site/{self.context}/tool/{self.entityId}"
+        return url
+    
+    def get_assignment_direct_url(self) -> str:
+        return self.entityURL
 
 class Assignments(BaseModel):
     entityPrefix: str
     assignment_collection: List[Assignment]
 
 if __name__ == "__main__":
-    title ="PandA : [2024後期月２]無機化学Ｉ（化学工学） : 概要"
-    if title.startswith("PandA :"):
-        title = title.replace("PandA :", "")
-    if title.endswith(": 概要"):
-        title = title.replace(": 概要", "")
-    if " " in title:
-        title = title.replace(" ", "")
-    print(title)
 
-     # 文字列の日付
-    date_str = "2024-10-22T10:10:00Z"
+    with open("data/assignments.json", "r", encoding="utf-8") as file:
+        json_data = json.load(file)
+    assigntments = Assignments(**json_data)
 
-    # 文字列をdatetimeオブジェクトに変換
-    date_object = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+    for assignment in assigntments.assignment_collection:
+        duetime = assignment.get_duetime()
+        is_submitted = assignment.is_submitted()
+        url = assignment.get_assignment_url()
+        direct_url = assignment.get_assignment_direct_url()
 
-    # 日本時間に変換（UTC+9）
-    japan_time = date_object + timedelta(hours=9)
-
-    # 曜日を取得し、省略形に変換
-    weekdays = ["月", "火", "水", "木", "金", "土", "日"]
-    weekday_short = weekdays[japan_time.weekday()]
-
-    # フォーマットして曜日を追加
-    formatted_date = japan_time.strftime(f"%Y/%m/%d %H:%M ({weekday_short})")
-    print(formatted_date)  # 例: 2024/10/22 19:10 (火)
+        print(duetime)
+        print(is_submitted)
+        print(url)
+        print(direct_url)
