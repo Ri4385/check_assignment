@@ -35,7 +35,7 @@ def main() -> None:
         
         # 課題のリストを表示
 
-        st.write("### 未提出の課題")
+        st.write("### 課題一覧")
         if data.assignment_collection:
             for ele in data.assignment_collection:
                 if ele.status == "DUE":
