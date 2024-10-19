@@ -5,7 +5,6 @@ from datetime import datetime
 
 from api import login
 from api import client
-# from api.model import Assignments
 from api.model import Assignment
 from api.model import Course
 
@@ -16,12 +15,35 @@ class AssignmentCard(BaseModel):
     url: str
     is_submitted: bool
 
-    def card(self) -> None:
+    @property
+    def remaining_time(self) -> str:
+
+        date_string = self.duetime.split(' (')[0]  # '(火)'を削除
+        date_format = "%Y/%m/%d %H:%M"
+
+        # 日付文字列を解析
+        target_date = datetime.strptime(date_string, date_format)
+
+        # 現在の日付を取得
+        now = datetime.now()
+
+        # 日付の差を計算
+        time_difference = target_date - now
+
+        # 日数、時間、分を取得
+        days = time_difference.days
+        hours, remainder = divmod(time_difference.seconds, 3600)
+        minutes = remainder // 60
+
+        return f"{days}日{hours}時間{minutes}分"
+
+    def display(self) -> None:
         st.markdown(
                 f"""
-                <div style="border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin: 10px;">
+                <div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">
                     <h6>{self.title}</h6>
                     <p>提出期限: {self.duetime}</p>
+                    <p>あと{self.remaining_time}</p>
                     <a href="{self.url}" target="_blank">提出する</a>
                     <p>{"提提出済み" if self.is_submitted else "未提出"}</p>
                 </div>
@@ -109,7 +131,8 @@ def main() -> None:
                 continue
             if assignment.status == "DUE":
                 continue
-            title = assignment.get_title(st.session_state.session)
+            # title = assignment.get_title(st.session_state.session)
+            title = course.title
             duetime = assignment.get_duetime()
             url = assignment.get_assignment_url()
             is_submitted = assignment.is_submitted()
@@ -125,14 +148,14 @@ def main() -> None:
         st.write("### 未提出の課題")
         if not_submitted_cards:
             for card in not_submitted_cards:
-                card.card()
+                card.display()
         else:
             st.info("No assignments found.")
 
         st.write("### 提出済みの課題")
         if submitted_cards:
             for card in submitted_cards:
-                card.card()
+                card.display()
         else:
             st.info("No assignments found.")
 
@@ -180,7 +203,6 @@ def fast_main():
         url = assignment.get_assignment_url()
         is_submitted = assignment.is_submitted()
         card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted)
-        # card.card()
         cards.append(card)
     print(cards)
     print(f"api time: {float(time.perf_counter() - start_time)}s")
