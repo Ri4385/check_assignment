@@ -1,9 +1,13 @@
 import requests
 import json
+from bs4 import BeautifulSoup
+
 from api.model import Assignments
+from api.model import Assignment
+from api.model import Course
 
 
-def get_assignmtnts(session: requests.Session) -> Assignments:
+def get_all_assignmtnts(session: requests.Session) -> Assignments:
     
     url = "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json"
 
@@ -15,6 +19,36 @@ def get_assignmtnts(session: requests.Session) -> Assignments:
 
     data: Assignments = Assignments(**json_data)
     return data
+
+def get_cources(session: requests.Session) -> list[Course]:
+    courses_url = "https://panda.ecs.kyoto-u.ac.jp/portal"
+
+    courses: list[Course] = []
+    data_response = session.get(courses_url)
+    soup = BeautifulSoup(data_response.text, 'html.parser')
+    print(soup.find_all('a', class_='fav-title'))
+
+    # fav-titleクラスのaタグを全て取得
+    for div in soup.find_all('div', class_='fav-title'):
+        link = div.find('a')
+        if link:
+            href = link.get('href')
+            title = link.get('title')
+            course = Course(title=title, url=href)
+            courses.append(course)
+    return courses
+
+def get_assignment(session: requests.Session, id: str) -> Assignment|None:
+    assignment_url = f"https://panda.ecs.kyoto-u.ac.jp/direct/assignment/site/{id}.json"
+
+    try:
+        json_data = session.get(assignment_url).json()
+        assignments = Assignments(**json_data)
+        assignment: Assignment = assignments.assignment_collection[0]
+        return assignment
+    except Exception as e:
+        print(f"no assignments foud {e}")
+        return None
 
 
 if __name__ == '__main__':

@@ -129,7 +129,7 @@ class Assignment(BaseModel):
         # BeautifulSoupでタイトルを取得
         soup = BeautifulSoup(response.content, 'html.parser')
         
-        title = soup.title.string
+        title:str = soup.title.string
         if title.startswith("PandA :"):
             title = title.replace("PandA :", "")
         if title.endswith(": 概要"):
@@ -175,6 +175,15 @@ class Assignment(BaseModel):
 class Assignments(BaseModel):
     entityPrefix: str
     assignment_collection: List[Assignment]
+
+class Course(BaseModel):
+    title: str
+    url: str
+
+    @property
+    def id(self) -> str:
+        return self.url.rsplit('/', 1)[-1]
+        
 
 if __name__ == "__main__":
 
