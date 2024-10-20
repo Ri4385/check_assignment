@@ -50,7 +50,7 @@ class AssignmentCard(BaseModel):
     def display(self) -> None:
 
         card = ""
-        card += '<div class="assignment_card" style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
+        card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px; min-width: 320px">'
         card += f'<h6>{self.title}</h6>'
         card += f'<p>提出期限 : {self.duetime}</p>'
         if self.due:
@@ -90,19 +90,6 @@ def skip_request(course: Course, year: str, semester: str) -> bool:
     return False
 
 def main() -> None:
-    # カスタム CSS を追加
-    st.markdown(
-        """
-        <style>
-        @media (max-width: 768px) {
-            .assignment_card {
-                width: 90% !important; /* 100%幅で表示 */
-            }
-        }
-        </style>
-        """,
-        unsafe_allow_html=True
-    )
     
     # Streamlitのタイトル
     st.title("Assignments Viewer")
