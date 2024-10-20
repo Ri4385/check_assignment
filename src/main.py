@@ -17,6 +17,7 @@ class AssignmentCard(BaseModel):
     url: str
     is_submitted: bool
     due: bool
+    closetime: str
 
     @property
     def remaining_time(self) -> str:
@@ -51,11 +52,12 @@ class AssignmentCard(BaseModel):
         card = ""
         card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
         card += f'<h6>{self.title}</h6>'
-        card += f'<p>提出期限: {self.duetime}</p>'
+        card += f'<p>提出期限 : {self.duetime}</p>'
         if self.due:
             card += f'<p>{self.remaining_time[1:]}経過</p>'
         else:
             card += f'<p>あと{self.remaining_time}</p>'
+        card += f'<p>遅延提出可能期限 : {self.closetime} (予測段階です。正しいとは限りません。)</p>'
         card += f'<a href="{self.url}" target="_blank">提出する</a>'
         card += f'<p>{"提提出済み" if self.is_submitted else "未提出"}</p>'
         card += "</div>"
@@ -140,12 +142,13 @@ def main() -> None:
                 duetime = assignment.get_duetime()
                 url = assignment.get_assignment_url()
                 is_submitted = assignment.is_submitted()
+                closetime = assignment.get_closetime()
                 if assignment.status == "DUE":
                     due = True
                 else:
                     due = False
 
-                card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted, due=due)
+                card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted, due=due, closetime=closetime)
                 if card.is_submitted:
                     submitted_cards.append(card)
                 else:
