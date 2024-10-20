@@ -53,7 +53,7 @@ class AssignmentCard(BaseModel):
 
         card += '<style>'
         card += '@media screen and (max-width: 768px) {'
-        card += 'div { width: 85vw; }'
+        card += 'div { width: 70vw; }'
         card += '}'
         card += '</style>'
 
