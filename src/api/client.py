@@ -38,21 +38,13 @@ def get_cources(session: requests.Session) -> list[Course]:
             courses.append(course)
     return courses
 
-def get_assignment(session: requests.Session, id: str) -> Assignment|None:
+def get_assignments(session: requests.Session, id: str) -> Assignments|None:
     assignment_url = f"https://panda.ecs.kyoto-u.ac.jp/direct/assignment/site/{id}.json"
 
     try:
         json_data = session.get(assignment_url).json()
-        
-        # if not json_data["assignment_collection"]:
-        #     print("kara skipped")
-        #     return None
         assignments = Assignments(**json_data)
-        assignment: Assignment = assignments.assignment_collection[0]
-        if len(assignments.assignment_collection) > 1:
-            print("一つの授業に二つ以上の課題があります。未実装です。")
-            raise NotImplementedError
-        return assignment
+        return assignments
     except Exception as e:
         print(f"no assignments foud {e}")
         return None

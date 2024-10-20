@@ -134,21 +134,23 @@ def main() -> None:
                 print(f"{course.title}skipped")
                 continue
             
-            assignment = client.get_assignment(session=st.session_state.session, id=id)
-            if not assignment:
+            assignments = client.get_assignments(session=st.session_state.session, id=id)
+            if not assignments:
                 continue
-            if assignment.status == "DUE":
+            if not assignments.assignment_collection:
                 continue
-            # title = assignment.get_title(st.session_state.session)
-            title = course.title
-            duetime = assignment.get_duetime()
-            url = assignment.get_assignment_url()
-            is_submitted = assignment.is_submitted()
-            card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted)
-            if card.is_submitted:
-                submitted_cards.append(card)
-            else:
-                not_submitted_cards.append(card)
+            for assignment in assignments.assignment_collection:
+                if assignment.status == "DUE":
+                    continue
+                title = course.title
+                duetime = assignment.get_duetime()
+                url = assignment.get_assignment_url()
+                is_submitted = assignment.is_submitted()
+                card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted)
+                if card.is_submitted:
+                    submitted_cards.append(card)
+                else:
+                    not_submitted_cards.append(card)
 
         
         # 課題のリストを表示
