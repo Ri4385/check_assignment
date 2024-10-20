@@ -4,7 +4,6 @@ import json
 from bs4 import BeautifulSoup
 
 from api.model import Assignments
-from api.model import Assignment
 from api.model import Course
 
 
