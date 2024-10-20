@@ -26,7 +26,6 @@ def get_cources(session: requests.Session) -> list[Course]:
     courses: list[Course] = []
     data_response = session.get(courses_url)
     soup = BeautifulSoup(data_response.text, 'html.parser')
-    print(soup.find_all('a', class_='fav-title'))
 
     # fav-titleクラスのaタグを全て取得
     for div in soup.find_all('div', class_='fav-title'):
@@ -43,6 +42,10 @@ def get_assignment(session: requests.Session, id: str) -> Assignment|None:
 
     try:
         json_data = session.get(assignment_url).json()
+        
+        # if not json_data["assignment_collection"]:
+        #     print("kara skipped")
+        #     return None
         assignments = Assignments(**json_data)
         assignment: Assignment = assignments.assignment_collection[0]
         return assignment
