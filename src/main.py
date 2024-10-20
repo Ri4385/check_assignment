@@ -142,7 +142,8 @@ def main() -> None:
                 duetime = assignment.get_duetime()
                 url = assignment.get_assignment_url()
                 is_submitted = assignment.is_submitted()
-                closetime = assignment.get_closetime()
+                # closetime = assignment.get_closetime()
+                closetime = "2024/10/23 19:10 (水)"
                 if assignment.status == "DUE":
                     due = True
                 else:
