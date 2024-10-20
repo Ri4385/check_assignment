@@ -57,7 +57,7 @@ class AssignmentCard(BaseModel):
             card += f'<p>{self.remaining_time[1:]}経過</p>'
         else:
             card += f'<p>あと{self.remaining_time}</p>'
-        card += f'<p>遅延提出期限 : {self.closetime} (予測段階です。正しいとは限りません。)</p>'
+        card += f'<p>遅延提出期限 : {self.closetime}<br>(予測段階です。正しいとは限りません。)</p>'
         card += f'<a href="{self.url}" target="_blank">提出する</a>'
         card += f'<p>{"提提出済み" if self.is_submitted else "未提出"}</p>'
         card += "</div>"
@@ -169,7 +169,7 @@ def main() -> None:
         else:
             st.info("No assignments found.")
 
-        st.write("\n\n\n")
+        st.write("\n\n\n\n")
         st.write("### 提出済みの課題")
         if submitted_cards:
             for card in submitted_cards:
