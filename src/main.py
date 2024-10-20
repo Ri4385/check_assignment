@@ -169,7 +169,7 @@ def main() -> None:
         else:
             st.info("No assignments found.")
 
-        st.write("\n\n\n\n")
+        st.write("\n\n\n\n\n\n\n\n\n\n")
         st.write("### 提出済みの課題")
         if submitted_cards:
             for card in submitted_cards:
