@@ -122,6 +122,7 @@ class Assignment(BaseModel):
     entityTitle: str
 
     def get_title(self, session: requests.Session) -> str:
+        """この関数は非推奨です"""
 
         target_url = f"https://panda.ecs.kyoto-u.ac.jp/portal/site/{self.context}"
         response = session.get(target_url)
