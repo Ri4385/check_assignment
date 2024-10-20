@@ -140,12 +140,10 @@ class Assignment(BaseModel):
             title = title.replace(" ", "")
         return title
     
-    def get_duetime(self) -> str:
-        # 文字列の日付
-        date_str = self.dueTimeString
-
+    @staticmethod
+    def convert_UTC_to_JST(timestring: str) -> str:
         # 文字列をdatetimeオブジェクトに変換
-        date_object = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
+        date_object = datetime.fromisoformat(timestring.replace("Z", "+00:00"))
 
         # 日本時間に変換（UTC+9）
         japan_time = date_object + timedelta(hours=9)
@@ -156,8 +154,18 @@ class Assignment(BaseModel):
 
         # フォーマットして曜日を追加
         formatted_date = japan_time.strftime(f"%Y/%m/%d %H:%M ({weekday_short})")
-
         return formatted_date
+    
+    def get_duetime(self) -> str:
+        duetime = self.dueTimeString
+        duetime = self.convert_UTC_to_JST(duetime)
+
+        return duetime
+    
+    def get_closetime(self) -> str:
+        closetime = self.closeTimeString
+        closetime = self.convert_UTC_to_JST(closetime)
+        return closetime
     
     def is_submitted(self) -> bool:
         if not self.submissions:
