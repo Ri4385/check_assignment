@@ -48,6 +48,9 @@ def get_assignment(session: requests.Session, id: str) -> Assignment|None:
         #     return None
         assignments = Assignments(**json_data)
         assignment: Assignment = assignments.assignment_collection[0]
+        if len(assignments.assignment_collection) > 1:
+            print("一つの授業に二つ以上の課題があります。未実装です。")
+            raise NotImplementedError
         return assignment
     except Exception as e:
         print(f"no assignments foud {e}")
