@@ -140,8 +140,8 @@ def main() -> None:
             if not assignments.assignment_collection:
                 continue
             for assignment in assignments.assignment_collection:
-                if assignment.status == "DUE":
-                    continue
+                # if assignment.status == "DUE":
+                #     continue
                 title = course.title
                 duetime = assignment.get_duetime()
                 url = assignment.get_assignment_url()
