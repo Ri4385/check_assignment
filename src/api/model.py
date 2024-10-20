@@ -157,14 +157,11 @@ class Assignment(BaseModel):
         return formatted_date
     
     def get_duetime(self) -> str:
-        duetime = self.dueTimeString
-        duetime = self.convert_UTC_to_JST(duetime)
-
+        duetime = self.convert_UTC_to_JST(self.dueTimeString)
         return duetime
     
     def get_closetime(self) -> str:
-        closetime = self.closeTimeString
-        closetime = self.convert_UTC_to_JST(closetime)
+        closetime = self.convert_UTC_to_JST(self.closeTimeString)
         return closetime
     
     def is_submitted(self) -> bool:
