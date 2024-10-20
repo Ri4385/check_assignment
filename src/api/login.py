@@ -1,5 +1,7 @@
 import requests
+
 from bs4 import BeautifulSoup
+
 from config import setting
 
 def login_with_password(username: str, password: str) -> requests.Session:
