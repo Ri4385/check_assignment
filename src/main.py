@@ -16,6 +16,7 @@ class AssignmentCard(BaseModel):
     duetime: str
     url: str
     is_submitted: bool
+    due: bool
 
     @property
     def remaining_time(self) -> str:
@@ -46,17 +47,20 @@ class AssignmentCard(BaseModel):
         return f"{days}日{hours}時間{minutes}分"
 
     def display(self) -> None:
-        st.markdown(
-                f"""
-                <div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">
-                    <h6>{self.title}</h6>
-                    <p>提出期限: {self.duetime}</p>
-                    <p>あと{self.remaining_time}</p>
-                    <a href="{self.url}" target="_blank">提出する</a>
-                    <p>{"提提出済み" if self.is_submitted else "未提出"}</p>
-                </div>
-                """
-                ,unsafe_allow_html=True)
+
+        card = ""
+        card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
+        card += f'<h6>{self.title}</h6>'
+        card += f'<p>提出期限: {self.duetime}</p>'
+        if self.due:
+            card += f'<p>{self.remaining_time[1:]}経過</p>'
+        else:
+            card += f'<p>あと{self.remaining_time}</p>'
+        card += f'<a href="{self.url}" target="_blank">提出する</a>'
+        card += f'<p>{"提提出済み" if self.is_submitted else "未提出"}</p>'
+        card += "</div>"
+
+        st.markdown(card, unsafe_allow_html=True)
         return
 
 def main() -> None:
@@ -140,13 +144,16 @@ def main() -> None:
             if not assignments.assignment_collection:
                 continue
             for assignment in assignments.assignment_collection:
-                # if assignment.status == "DUE":
-                #     continue
+                
                 title = course.title
                 duetime = assignment.get_duetime()
                 url = assignment.get_assignment_url()
                 is_submitted = assignment.is_submitted()
-                card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted)
+                if assignment.status == "DUE":
+                    due = True
+                else:
+                    due = False
+                card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted, due=due)
                 if card.is_submitted:
                     submitted_cards.append(card)
                 else:
