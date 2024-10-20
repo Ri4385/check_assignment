@@ -91,7 +91,6 @@ def skip_request(course: Course, year: str, semester: str) -> bool:
 
 def main() -> None:
     # カスタム CSS を追加
-    st.write("changed 1")
     st.markdown(
         """
         <style>
@@ -179,7 +178,8 @@ def main() -> None:
         else:
             st.info("No assignments found.")
 
-        st.write("\n### 提出済みの課題")
+        st.write("\n\n")
+        st.write("### 提出済みの課題")
         if submitted_cards:
             for card in submitted_cards:
                 card.display()
