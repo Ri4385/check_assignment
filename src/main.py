@@ -137,8 +137,8 @@ def main() -> None:
             assignment = client.get_assignment(session=st.session_state.session, id=id)
             if not assignment:
                 continue
-            # if assignment.status == "DUE":
-            #     continue
+            if assignment.status == "DUE":
+                continue
             # title = assignment.get_title(st.session_state.session)
             title = course.title
             duetime = assignment.get_duetime()
