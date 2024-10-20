@@ -91,6 +91,7 @@ def skip_request(course: Course, year: str, semester: str) -> bool:
 
 def main() -> None:
     # カスタム CSS を追加
+    st.write("changed 1")
     st.markdown(
         """
         <style>
