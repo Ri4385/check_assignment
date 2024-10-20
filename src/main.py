@@ -50,7 +50,7 @@ class AssignmentCard(BaseModel):
     def display(self) -> None:
 
         card = ""
-        card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
+        card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px; min-width: 320px;">'
         card += f'<h6>{self.title}</h6>'
         card += f'<p>提出期限 : {self.duetime}</p>'
         if self.due:
