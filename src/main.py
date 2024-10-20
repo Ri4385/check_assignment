@@ -50,7 +50,7 @@ class AssignmentCard(BaseModel):
     def display(self) -> None:
 
         card = ""
-        card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px; min-width: 320px;">'
+        card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
         card += f'<h6>{self.title}</h6>'
         card += f'<p>提出期限 : {self.duetime}</p>'
         if self.due:
@@ -90,6 +90,10 @@ def skip_request(course: Course, year: str, semester: str) -> bool:
     return False
 
 def main() -> None:
+    st.set_page_config(
+        page_title="Assignment Check App",
+        layout="wide",
+    )
     
     # Streamlitのタイトル
     st.title("Assignments Viewer")
