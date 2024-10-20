@@ -50,7 +50,7 @@ class AssignmentCard(BaseModel):
     def display(self) -> None:
 
         card = ""
-        card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
+        card += '<div class="assignment_card" style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
         card += f'<h6>{self.title}</h6>'
         card += f'<p>提出期限 : {self.duetime}</p>'
         if self.due:
@@ -95,8 +95,8 @@ def main() -> None:
         """
         <style>
         @media (max-width: 768px) {
-            .reportview-container {
-                width: 100% !important; /* 100%幅で表示 */
+            .assignment_card {
+                width: 90% !important; /* 100%幅で表示 */
             }
         }
         </style>
