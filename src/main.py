@@ -2,6 +2,7 @@ import streamlit as st
 from pydantic import BaseModel
 import time
 from datetime import datetime
+import pytz
 
 from api import login
 from api import client
@@ -24,8 +25,14 @@ class AssignmentCard(BaseModel):
         # 日付文字列を解析
         target_date = datetime.strptime(date_string, date_format)
 
-        # 現在の日付を取得
-        now = datetime.now()
+        # タイムゾーンを日本時間に設定
+        japan_tz = pytz.timezone('Asia/Tokyo')
+
+        # 日付文字列を解析し、タイムゾーンを付与
+        target_date = japan_tz.localize(datetime.strptime(date_string, date_format))
+
+        # 現在の日付を日本時間で取得
+        now = datetime.now(japan_tz)
 
         # 日付の差を計算
         time_difference = target_date - now
