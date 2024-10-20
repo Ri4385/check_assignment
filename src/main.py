@@ -50,6 +50,13 @@ class AssignmentCard(BaseModel):
     def display(self) -> None:
 
         card = ""
+
+        card += '<style>'
+        card += '@media screen and (max-width: 768px) {'
+        card += 'div { width: 90vw; }'
+        card += '}'
+        card += '</style>'
+        
         card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
         card += f'<h6>{self.title}</h6>'
         card += f'<p>提出期限 : {self.duetime}</p>'
