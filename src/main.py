@@ -63,6 +63,30 @@ class AssignmentCard(BaseModel):
         st.markdown(card, unsafe_allow_html=True)
         return
 
+def get_year_and_semester() -> tuple[str, str]:
+    current_date = datetime.now()
+    year_int: int = current_date.year
+    if current_date.month < 4:
+        year_int -= 1
+    year:str = str(year_int)
+    if 4 <= current_date.month < 9:
+        semester = "前期"
+    else:
+        semester = "後期"
+    return year, semester
+
+def skip_request(course: Course, year: str, semester: str) -> bool:
+    if course.title == "Home":
+        print(f"{course.title}skipped")
+        return True
+    if course.title[1:5] != year:
+        print(f"{course.title}skipped")
+        return True
+    if course.title[5:7] != semester:
+        print(f"{course.title}skipped")
+        return True
+    return False
+
 def main() -> None:
     
     # Streamlitのタイトル
@@ -91,51 +115,17 @@ def main() -> None:
     # 課題を取得するボタン
     if st.session_state.logged_in and st.button("Get Assignments"):
         start_time = time.perf_counter()
-        # data: Assignments = client.get_all_assignmtnts(session=st.session_state.session)
 
-        # not_submitted_cards: list[AssignmentCard] = []
-        # submitted_cards: list[AssignmentCard] = []
-
-        # if data.assignment_collection:
-        #     for ele in data.assignment_collection:
-        #         if ele.status == "DUE":
-        #             continue
-
-        #         title = ele.get_title(session=st.session_state.session)
-        #         duetime = ele.get_duetime()
-        #         url = ele.get_assignment_url()
-        #         is_submitted = ele.is_submitted()
-
-        #         card = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted)
-
-        #         if card.is_submitted:
-        #             submitted_cards.append(card)
-        #         else:
-        #             not_submitted_cards.append(card)
         courses: list[Course] = client.get_cources(session=st.session_state.session)
         not_submitted_cards: list[AssignmentCard] = []
         submitted_cards: list[AssignmentCard] = []
 
-        current_date = datetime.now()
-        year_int: int = current_date.year
-        if current_date.month < 4:
-            year_int -= 1
-        year:str = str(year_int)
-        if 4 <= current_date.month < 9:
-            semester = "前期"
-        else:
-            semester = "後期"
+        year, semester = get_year_and_semester()
         
         for course in courses:
             id: str = course.id
-            if course.title == "Home":
-                print(f"{course.title}skipped")
-                continue
-            if course.title[1:5] != year:
-                print(f"{course.title}skipped")
-                continue
-            if course.title[5:7] != semester:
-                print(f"{course.title}skipped")
+            
+            if skip_request(course=course, year=year, semester=semester):
                 continue
             
             assignments = client.get_assignments(session=st.session_state.session, id=id)
@@ -143,6 +133,7 @@ def main() -> None:
                 continue
             if not assignments.assignment_collection:
                 continue
+
             for assignment in assignments.assignment_collection:
                 
                 title = course.title
@@ -153,6 +144,7 @@ def main() -> None:
                     due = True
                 else:
                     due = False
+
                 card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted, due=due)
                 if card.is_submitted:
                     submitted_cards.append(card)
@@ -177,54 +169,6 @@ def main() -> None:
             st.info("No assignments found.")
 
         st.write(f"api time: {(time.perf_counter() - start_time):.02f}s")
-
-def fast_main():
-    session = login.login_with_password(username="a0233232", password="Nagauchi0408")
-
-    start_time = time.perf_counter()
-
-    courses: list[Course] = client.get_cources(session=session)
-    assignment_list: list[Assignment] = []
-    not_submitted_cards: list[AssignmentCard] = []
-    submitted_cards: list[AssignmentCard] = []
-    print(courses)
-    cards = []
-
-    current_date = datetime.now()
-    year_int: int = current_date.year
-    if current_date.month < 4:
-        year_int -= 1
-    year:str = str(year_int)
-    if 4 <= current_date.month < 9:
-        semester = "前期"
-    else:
-        semester = "後期"
-    
-    for course in courses:
-        id: str = course.id
-        if course.title == "Home":
-            print(f"{course.title}skipped")
-            continue
-        if course.title[1:5] != year:
-            print(f"{course.title}skipped")
-            continue
-        if course.title[5:7] != semester:
-            print(f"{course.title}skipped")
-            continue
-        
-        assignment = client.get_assignment(session=session, id=id)
-        if not assignment:
-            continue
-        title = assignment.get_title(session)
-        duetime = assignment.get_duetime()
-        url = assignment.get_assignment_url()
-        is_submitted = assignment.is_submitted()
-        card: AssignmentCard = AssignmentCard(title=title, duetime=duetime, url=url, is_submitted=is_submitted)
-        cards.append(card)
-    print(cards)
-    print(f"api time: {float(time.perf_counter() - start_time)}s")
-            
-
 
         
 if __name__ == "__main__":
