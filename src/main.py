@@ -97,7 +97,7 @@ def main() -> None:
         <style>
         @media (max-width: 768px) {
             .reportview-container {
-                max-width: 100% !important; /* 100%幅で表示 */
+                width: 100% !important; /* 100%幅で表示 */
             }
         }
         </style>
