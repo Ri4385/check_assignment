@@ -1,8 +1,9 @@
-import streamlit as st
-from pydantic import BaseModel
 import time
 from datetime import datetime
 import pytz
+
+import streamlit as st
+from pydantic import BaseModel
 
 from api import login
 from api import client

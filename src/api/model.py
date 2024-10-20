@@ -1,9 +1,10 @@
 from typing import List, Optional, Dict, Any, Union
-from pydantic import BaseModel
-import requests
-from bs4 import BeautifulSoup
-from datetime import datetime, timedelta
 import json
+import requests
+from datetime import datetime, timedelta
+
+from pydantic import BaseModel
+from bs4 import BeautifulSoup
 
 
 
