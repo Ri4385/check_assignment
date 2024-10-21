@@ -113,6 +113,7 @@ def main() -> None:
                 st.session_state.session = session  # セッションを保存
                 st.session_state.logged_in = True  # ログイン状態を更新
                 st.success("Logged in successfully!")
+                st.rerun()
             else:
                 st.warning("Please enter both username and password.")
     else:
