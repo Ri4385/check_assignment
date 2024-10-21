@@ -59,7 +59,7 @@ class AssignmentCard(BaseModel):
             card += f'<p>あと{self.remaining_time}</p>'
         card += f'<p>遅延提出期限 : {self.closetime}<br>(予測段階です。正しいとは限りません。)</p>'
         card += f'<a href="{self.url}" target="_blank">提出する</a>'
-        card += f'<p>{"提提出済み" if self.is_submitted else "未提出"}</p>'
+        card += f'<p>{"提出済み" if self.is_submitted else "未提出"}</p>'
         card += "</div>"
 
         st.markdown(card, unsafe_allow_html=True)
