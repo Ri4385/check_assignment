@@ -8,6 +8,7 @@ username, passwordでログインしてget assignmentを押すと課題が見れ
 
 DUEのやつ見れるけど見れないようにするか悩み中
 遅延提出ができるかどうかと、その期限を表示したいかも
+授業資料見れるようにしたい
 
 なんでREADME.mdじゃなくて.txtかって？？？僕の環境だと.md保存時にpdf exportされるからです。
 なんか仮想環境とか設定とかで変えられると思うけどめんどいのでやりません。
@@ -29,3 +30,4 @@ folderなら~/name.jsonでリクエスト送る、fileUploadならnameとurlメ�
 
 https://panda.ecs.kyoto-u.ac.jp/access/content/group/2024-110-7302-000/
 apiよりこれでスクレイピングしたほうが多分早い。
+
