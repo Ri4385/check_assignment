@@ -3,7 +3,7 @@ import json
 import requests
 from datetime import datetime, timedelta
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from bs4 import BeautifulSoup
 
 
@@ -190,6 +190,31 @@ class Course(BaseModel):
     @property
     def id(self) -> str:
         return self.url.rsplit('/', 1)[-1]
+    
+class Resource(BaseModel):
+    created: int #1727684127863
+    creator: str #"9f2f3d86-1ef9-4c71-b39e-160827506e6a"
+    description: str|None #null
+    hidden: bool #false
+    mimeType: str|None #null
+    modified: int #1727684127889
+    modifiedBy: str #"9f2f3d86-1ef9-4c71-b39e-160827506e6a"
+    name: str #"[2024後期木１]化学工学数学Ｉ（化学工学）"
+    priority: str|int #"45008"
+    # properties: list #{}
+    reference: str #"/content/group/2024-110-7302-000/"
+    resourceChildren: list #[…]
+    resourceId: str	#"/group/2024-110-7302-000/"
+    size: int|str|None #null
+    type_: str = Field(..., alias="type") #"org.sakaiproject.content.types.folder"
+    url: str #"https://panda.ecs.kyoto-u.ac.jp/access/content/group/2024-110-7302-000/"
+    # entityReference: str #"/content"
+    # entityURL: str #"https://panda.ecs.kyoto-u.ac.jp/direct/content"
+
+# class Resource(BaseModel):
+#     title: str
+#     url: str
+    
         
 
 if __name__ == "__main__":

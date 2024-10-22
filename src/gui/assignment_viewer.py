@@ -5,9 +5,7 @@ import pytz
 import streamlit as st
 from pydantic import BaseModel
 
-from api import login
 from api import client
-from api.model import Assignment
 from api.model import Course
 
 
@@ -57,7 +55,7 @@ class AssignmentCard(BaseModel):
             card += f'<p>{self.remaining_time[1:]}経過</p>'
         else:
             card += f'<p>あと{self.remaining_time}</p>'
-        card += f'<p>遅延提出期限 : {self.closetime}<br>(予測段階です。正しいとは限りません。)</p>'
+        card += f'<p>遅延提出期限 : {self.closetime}</p>'
         card += f'<a href="{self.url}" target="_blank">提出する</a>'
         card += f'<p>{"提出済み" if self.is_submitted else "未提出"}</p>'
         card += "</div>"
@@ -90,33 +88,8 @@ def skip_request(course: Course, year: str, semester: str) -> bool:
     return False
 
 def main() -> None:
-    st.set_page_config(
-        page_title="Assignment Check App",
-        layout="wide",
-    )
-    
     # Streamlitのタイトル
-    st.title("Assignments Viewer")
-
-    # ログインセクション
-    if 'logged_in' not in st.session_state:
-        st.session_state.logged_in = False
-
-    if not st.session_state.logged_in:
-        # ユーザー名とパスワードの入力フィールド
-        username = st.text_input("Username", type="default")
-        password = st.text_input("Password", type="password")
-
-        if st.button("Login"):
-            if username and password:
-                session = login.login_with_password(username=username, password=password)
-                st.session_state.session = session  # セッションを保存
-                st.session_state.logged_in = True  # ログイン状態を更新
-                st.success("Logged in successfully!")
-            else:
-                st.warning("Please enter both username and password.")
-    else:
-        st.success("You are already logged in.")
+    st.write("### Assignments Viewer")
 
     # 課題を取得するボタン
     if st.session_state.logged_in and st.button("Get Assignments"):
@@ -159,6 +132,7 @@ def main() -> None:
                 else:
                     not_submitted_cards.append(card)
 
+        st.write("遅延提出期限は予測段階です。正しいとは限りません。")
         
         # 課題のリストを表示
 
@@ -179,21 +153,5 @@ def main() -> None:
 
         st.write(f"api time: {(time.perf_counter() - start_time):.02f}s")
 
-        
 if __name__ == "__main__":
-    # main()
-    import urllib.parse
-    from api import client
-    session = login.login_with_password("a0233232", "Nagauchi0408")
-    # resources = client.get_resources(session, id="2024-110-7302-000")
-    # resources = client.get_resources_by_scraping(session, id="2024-110-7302-000")
-    resources = client.get_resources_by_api(session, id="2024-110-7302-000")
-
-    for res in resources:
-        print(res.name)
-        print(res.modified)
-        print(res.url)
-        print()
-
-    # for resource in resources:
-    #     print(resource.title, urllib.parse.unquote(resource.url))
+    main()
