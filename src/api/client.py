@@ -102,7 +102,7 @@ def get_resources_by_scraping_access(
             url = a_tag["href"]
             # 相対パスを絶対パスに変換
             if not url.startswith("http"):
-                absolute_url = urllib.parse.urljoin(resource_url, url)
+                absolute_url = resource_url + "/" + url
 
             # liタグのクラス名とaタグのテキストを取得
             li_class = li.get("class")[0]
