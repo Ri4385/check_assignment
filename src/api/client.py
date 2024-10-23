@@ -6,39 +6,40 @@ from bs4 import BeautifulSoup
 from api.model import Assignments
 from api.model import Course
 from api.model import Resource
+from api.model import ResourceSCR
 
 
 def get_all_assignmtnts(session: requests.Session) -> Assignments:
-    
     url = "https://panda.ecs.kyoto-u.ac.jp/direct/assignment/my.json"
 
     json_data = session.get(url).json()
 
-    
     # with open("data/assignments.json", "w", encoding="utf-8") as file:
     #     json.dump(json_data,file,indent=2,ensure_ascii=False)
 
     data: Assignments = Assignments(**json_data)
     return data
 
+
 def get_cources(session: requests.Session) -> list[Course]:
     courses_url = "https://panda.ecs.kyoto-u.ac.jp/portal"
 
     courses: list[Course] = []
     data_response = session.get(courses_url)
-    soup = BeautifulSoup(data_response.text, 'html.parser')
+    soup = BeautifulSoup(data_response.text, "html.parser")
 
     # fav-titleクラスのaタグを全て取得
-    for div in soup.find_all('div', class_='fav-title'):
-        link = div.find('a')
+    for div in soup.find_all("div", class_="fav-title"):
+        link = div.find("a")
         if link:
-            href = link.get('href')
-            title = link.get('title')
+            href = link.get("href")
+            title = link.get("title")
             course = Course(title=title, url=href)
             courses.append(course)
     return courses
 
-def get_assignments(session: requests.Session, id: str) -> Assignments|None:
+
+def get_assignments(session: requests.Session, id: str) -> Assignments | None:
     assignment_url = f"https://panda.ecs.kyoto-u.ac.jp/direct/assignment/site/{id}.json"
 
     try:
@@ -48,7 +49,8 @@ def get_assignments(session: requests.Session, id: str) -> Assignments|None:
     except Exception as e:
         print(f"no assignments foud {e}")
         return None
-    
+
+
 def get_resources_by_api(session: requests.Session, id: str) -> list[Resource]:
     resource_url = f"https://panda.ecs.kyoto-u.ac.jp/direct/content/resources/{id}.json"
 
@@ -57,7 +59,7 @@ def get_resources_by_api(session: requests.Session, id: str) -> list[Resource]:
 
     if len(json_data["content_collection"]) > 1:
         raise NotImplementedError()
-    
+
     print("api start")
     resource: Resource = Resource(**json_data["content_collection"][0])
 
@@ -76,64 +78,69 @@ def get_resources_by_api(session: requests.Session, id: str) -> list[Resource]:
             #     resources.append(resource_child)
             # else:
             #     raise NotImplementedError()
-                    
+
         resource.resourceChildren = []
 
     return resources
 
-def get_resources(session: requests.Session, id: str, directory: str|None = None) -> list[Resource]:
 
+def get_resources_by_scraping_access(
+    session: requests.Session, id: str, directory: str | None = None
+) -> list[ResourceSCR]:
     resource_url = f"https://panda.ecs.kyoto-u.ac.jp/access/content/group/{id}"
 
-    resources: list[Resource] = []
+    resources: list[ResourceSCR] = []
 
     response = session.get(resource_url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    soup = BeautifulSoup(response.content, "html.parser")
 
     # liタグのaタグを探す
-    li_tags = soup.find_all('li')
+    li_tags = soup.find_all("li")
     for li in li_tags:
-        a_tag = li.find('a')
+        a_tag = li.find("a")
         if a_tag:
-            url = a_tag['href']
+            url = a_tag["href"]
             # 相対パスを絶対パスに変換
-            if not url.startswith('http'):
+            if not url.startswith("http"):
                 absolute_url = urllib.parse.urljoin(resource_url, url)
 
             # liタグのクラス名とaタグのテキストを取得
-            li_class = li.get('class')[0]
+            li_class = li.get("class")[0]
             title = a_tag.get_text(strip=True)
 
             if directory:
-                title = directory + "_" + title
+                title = directory + "/" + title
 
             if li_class == "folder":
-                resources_ = get_resources(session=session, id=f"{id}/{url}", directory=title)
+                resources_ = get_resources_by_scraping_access(
+                    session=session, id=f"{id}/{url}", directory=title
+                )
                 resources.extend(resources_)
             elif li_class == "file":
-                resource: Resource = Resource(name=title, url=absolute_url)
+                resource: ResourceSCR = ResourceSCR(title=title, url=absolute_url)
                 resources.append(resource)
 
     return resources
 
+
 def get_resources_by_scraping(session: requests.Session, id: str) -> list[Resource]:
     resource_url = f"https://panda.ecs.kyoto-u.ac.jp/portal/site/{id}"
     response = session.get(resource_url)
-    soup = BeautifulSoup(response.content, 'html.parser')
+    soup = BeautifulSoup(response.content, "html.parser")
 
     # navタグを取得
-    nav = soup.find('nav', class_='Mrphs-toolsNav__menu')
+    nav = soup.find("nav", class_="Mrphs-toolsNav__menu")
     if nav:
         # liタグのaタグを探す
-        for li in nav.find_all('li'):
-            a_tag = li.find('a')
-            if a_tag and a_tag['title'].startswith("授業資料"):
-                href = a_tag['href']
-                
+        for li in nav.find_all("li"):
+            a_tag = li.find("a")
+            if a_tag and a_tag["title"].startswith("授業資料"):
+                href = a_tag["href"]
+
                 # 指定されたリンクにアクセス
                 new_response = session.get(href)
-                new_soup = BeautifulSoup(new_response.content, 'html.parser')
-                
+                new_soup = BeautifulSoup(new_response.content, "html.parser")
+
                 # tdタグのクラス名が"specialLink"のものを取得
                 special_links = new_soup.find_all("tr")
                 for link in special_links:
@@ -141,8 +148,7 @@ def get_resources_by_scraping(session: requests.Session, id: str) -> list[Resour
     return resources
 
 
-if __name__ == '__main__':
-    
+if __name__ == "__main__":
     # with open("data/assignments.json", "r", encoding="utf-8") as file:
     #     json_data = json.load(file)
     # assignments = Assignments(**json_data)
@@ -150,10 +156,9 @@ if __name__ == '__main__':
     # assignments.assignment_collection[0]
     # pass
     import login
+
     session = login.login_with_password("a0233232", "Nagauchi0408")
     resources = get_resources(session, id="2024-110-7302-000")
 
     for resource in resources:
         print(resource.name)
-
-    

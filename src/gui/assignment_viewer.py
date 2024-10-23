@@ -7,6 +7,8 @@ from pydantic import BaseModel
 
 from api import client
 from api.model import Course
+from api.model import Attachment
+from api.model import SubmittedAttachment
 
 
 class AssignmentCard(BaseModel):
@@ -16,25 +18,18 @@ class AssignmentCard(BaseModel):
     is_submitted: bool
     due: bool
     closetime: str
+    attachments: list[Attachment]
+    submitted_attachments: list[SubmittedAttachment]
 
     @property
     def remaining_time(self) -> str:
         date_string = self.duetime.split(" (")[0]  # '(火)'を削除
         date_format = "%Y/%m/%d %H:%M"
 
-        # 日付文字列を解析
         target_date = datetime.strptime(date_string, date_format)
-
-        # タイムゾーンを日本時間に設定
         japan_tz = pytz.timezone("Asia/Tokyo")
-
-        # 日付文字列を解析し、タイムゾーンを付与
         target_date = japan_tz.localize(datetime.strptime(date_string, date_format))
-
-        # 現在の日付を日本時間で取得
         now = datetime.now(japan_tz)
-
-        # 日付の差を計算
         time_difference = abs(target_date - now)
 
         # 日数、時間、分を取得
@@ -61,7 +56,16 @@ class AssignmentCard(BaseModel):
             card += f"<p>あと{self.remaining_time}</p>"
         card += f"<p>遅延提出期限 : {self.closetime}</p>"
         card += f'<a href="{self.url}" target="_blank">提出する</a>'
-        card += f'<p>{"提出済み" if self.is_submitted else "未提出"}</p>'
+        if self.attachments:
+            card += f'<p>添付ファイル: <a href="{self.attachments[0].url}" target="_blank">{self.attachments[0].name}</a></p>'
+        if self.is_submitted:
+            card += "<p>提出済み"
+            if self.submitted_attachments[0].name and self.submitted_attachments[0].url:
+                card += f': <a href="{self.submitted_attachments[0].url}" target="_blank">{self.submitted_attachments[0].name}</a>'
+            card += "</p>"
+        else:
+            card += "<p>未提出</p>"
+
         card += "</div>"
 
         st.markdown(card, unsafe_allow_html=True)
@@ -128,6 +132,8 @@ def main() -> None:
                 url = assignment.get_assignment_url()
                 is_submitted = assignment.is_submitted()
                 closetime = assignment.get_closetime()
+                attachments = assignment.attachments
+                submitted_attachments = assignment.get_submitted_attachments()
                 if assignment.status == "DUE":
                     due = True
                 else:
@@ -140,6 +146,8 @@ def main() -> None:
                     is_submitted=is_submitted,
                     due=due,
                     closetime=closetime,
+                    attachments=attachments,
+                    submitted_attachments=submitted_attachments,
                 )
                 if card.is_submitted:
                     submitted_cards.append(card)
