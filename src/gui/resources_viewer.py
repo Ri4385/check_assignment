@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from api import client
 from api.model import Course
-from api.model import Resource
+from api.model import ResourceSCR
 
 
 class ResourceCard(BaseModel):
@@ -55,14 +55,13 @@ def skip_request(course: Course, year: str, semester: str) -> bool:
 def main() -> None:
     st.write("## Resources Viewer")
 
-    start = time.perf_counter()
+    resource_cards: list[ResourceCard] = []
 
-    if st.button("Get Resources"):
+    if st.button("Get Resources Newest First"):
         courses: list[Course] = client.get_cources(session=st.session_state.session)
 
         year, semester = get_year_and_semester()
 
-        resource_cards: list[ResourceCard] = []
         for course in courses:
             if skip_request(course=course, year=year, semester=semester):
                 continue
@@ -79,19 +78,31 @@ def main() -> None:
                 )
                 resource_cards.append(resource_card)
 
+    if st.button("Get Resources By Course"):
+        courses: list[Course] = client.get_cources(session=st.session_state.session)
+        year, semester = get_year_and_semester()
+
+        for course in courses:
+            if skip_request(course=course, year=year, semester=semester):
+                continue
+            resouces_SCP: list[ResourceSCR] = client.get_resources_by_scraping_access(
+                session=st.session_state.session, id=course.id
+            )
+
+            with st.expander(course.title):
+                for res_SCR in resouces_SCP:
+                    st.write(
+                        f'<a href="{res_SCR.url}" target="_blank">{res_SCR.title}</a>',
+                        unsafe_allow_html=True,
+                    )
+
+    if resource_cards:
         # rsourcesを表示
         resource_cards.sort(key=lambda res: -res.modified)
         st.write("フォルダの中にあるファイルは表示されていません。")
 
         for resource_card in resource_cards:
             resource_card.display()
-
-        st.write(time.perf_counter() - start, "s")
-
-        # resources.sort(key=lambda res: -res.modified)
-        # for res in resources:
-        #     st.write(res.name, res.modified)
-        #     st.write(res.url)
     return
 
 
