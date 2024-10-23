@@ -147,6 +147,7 @@ def main() -> None:
                     not_submitted_cards.append(card)
 
         st.write("遅延提出期限は予測段階です。正しいとは限りません。")
+        not_submitted_cards.sort(key=lambda card: card.duetime.split(" (")[0])
 
         # 課題のリストを表示
 
