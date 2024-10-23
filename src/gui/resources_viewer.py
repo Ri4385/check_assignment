@@ -79,7 +79,9 @@ def main() -> None:
                 )
                 resource_cards.append(resource_card)
 
+        # rsourcesを表示
         resource_cards.sort(key=lambda res: -res.modified)
+        st.write("フォルダの中にあるファイルは表示されていません。")
 
         for resource_card in resource_cards:
             resource_card.display()
