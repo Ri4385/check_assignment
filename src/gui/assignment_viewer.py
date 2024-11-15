@@ -13,6 +13,7 @@ from api.model import SubmittedAttachment
 
 class AssignmentCard(BaseModel):
     title: str
+    instructions: str
     duetime: str
     url: str
     is_submitted: bool
@@ -48,7 +49,7 @@ class AssignmentCard(BaseModel):
     def display(self) -> None:
         card = ""
         card += '<div style="border: 1px solid #ccc; border-radius: 15px; padding: 10px; margin: 10px;">'
-        card += f"<h6>{self.title}</h6>"
+        card += f"<h5>{self.title}</h6>"
         card += f"<p>提出期限 : {self.duetime}</p>"
         if self.remaining_time[0] == "-":
             card += f"<p>{self.remaining_time[1:]}経過</p>"
@@ -64,8 +65,9 @@ class AssignmentCard(BaseModel):
                 card += f': <a href="{self.submitted_attachments[0].url}" target="_blank">{self.submitted_attachments[0].name}</a>'
             card += "</p>"
         else:
-            card += "<p>未提出</p>"
-
+            card += "<h6>未提出</h6>"
+        card += "<p>説明</p>"
+        card += self.instructions
         card += "</div>"
 
         st.markdown(card, unsafe_allow_html=True)
@@ -133,6 +135,7 @@ def main() -> None:
                 is_submitted = assignment.is_submitted()
                 closetime = assignment.get_closetime()
                 attachments = assignment.attachments
+                instructions = assignment.instructions
                 submitted_attachments = assignment.get_submitted_attachments()
                 if assignment.status == "DUE":
                     due = True
@@ -141,6 +144,7 @@ def main() -> None:
 
                 card: AssignmentCard = AssignmentCard(
                     title=title,
+                    instructions=instructions,
                     duetime=duetime,
                     url=url,
                     is_submitted=is_submitted,
