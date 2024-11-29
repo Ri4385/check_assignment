@@ -29,15 +29,17 @@ def main() -> None:
         )
 
         if st.button("Login"):
-            # if username:
-            session = login.login_with_password(username=username, password=password)
-            st.session_state.session = session  # セッションを保存
-            st.session_state.logged_in = True  # ログイン状態を更新
-            st.success("Logged in successfully!")
-            time.sleep(0.8)
-            st.rerun()
-            # else:
-            #     st.warning("Please enter both username and password.")
+            if username and password:
+                session = login.login_with_password(
+                    username=username, password=password
+                )
+                st.session_state.session = session  # セッションを保存
+                st.session_state.logged_in = True  # ログイン状態を更新
+                st.success("Logged in successfully!")
+                time.sleep(0.8)
+                st.rerun()
+            else:
+                st.warning("Please enter both username and password.")
     else:
         tab_assignment, tab_resources, tab_releases = st.tabs(
             ["assignments", "resources", "releases"]
