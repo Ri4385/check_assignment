@@ -24,7 +24,9 @@ def main() -> None:
     if not st.session_state.logged_in:
         # ユーザー名とパスワードの入力フィールド
         username = st.text_input("Username", type="default")
-        password = st.text_input("Password", type="password")
+        password = st.text_input(
+            "Password", autocomplete="current-password", type="password"
+        )
 
         if st.button("Login"):
             if username and password:
