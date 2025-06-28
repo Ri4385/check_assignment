@@ -10,9 +10,6 @@ DUEのやつ見れるけど見れないようにするか悩み中
 遅延提出ができるかどうかと、その期限を表示したいかも
 授業資料見れるようにしたい
 
-なんでREADME.mdじゃなくて.txtかって？？？僕の環境だと.md保存時にpdf exportされるからです。
-なんか仮想環境とか設定とかで変えられると思うけどめんどいのでやりません。
-
 sakai apiの仕様？
 https://sakaiproject.atlassian.net/wiki/spaces/CONF/overview?mode=global
 
