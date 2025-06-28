@@ -1,12 +1,11 @@
-from datetime import datetime
-import time
-
 import streamlit as st
 from pydantic import BaseModel
 
 from api import client
 from api.model import Course
 from api.model import ResourceSCR
+
+from gui.util import skip_request, get_year_and_semester
 
 
 class ResourceCard(BaseModel):
@@ -24,32 +23,6 @@ class ResourceCard(BaseModel):
 
         st.markdown(card, unsafe_allow_html=True)
         return
-
-
-def get_year_and_semester() -> tuple[str, str]:
-    current_date = datetime.now()
-    year_int: int = current_date.year
-    if current_date.month < 4:
-        year_int -= 1
-    year: str = str(year_int)
-    if 4 <= current_date.month < 9:
-        semester = "前期"
-    else:
-        semester = "後期"
-    return year, semester
-
-
-def skip_request(course: Course, year: str, semester: str) -> bool:
-    if course.title == "Home":
-        print(f"{course.title}skipped")
-        return True
-    if course.title[1:5] != year:
-        print(f"{course.title}skipped")
-        return True
-    if course.title[5:7] != semester:
-        print(f"{course.title}skipped")
-        return True
-    return False
 
 
 def main() -> None:
